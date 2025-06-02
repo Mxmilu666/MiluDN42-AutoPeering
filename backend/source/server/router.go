@@ -15,6 +15,7 @@ func initRouter(r *gin.Engine) *gin.Engine {
 		}
 
 		api.POST("/verify", handles.RequestVerify)
+		api.POST("/peer", handles.PeerHandler)
 	}
 
 	// 动态生成的/verify/:dir路由
