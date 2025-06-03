@@ -8,7 +8,8 @@
   "ipv6": "",
   "public_ip": "1.2.3.4",
   "extended_next_hop": false,
-  "routes": "ipv4"
+  "routes": "ipv4",
+  "multi_protocol": false
 }
 ```
 
@@ -20,7 +21,8 @@
   "ipv6": "fd00:1::1",
   "public_ip": "1.2.3.4",
   "extended_next_hop": false,
-  "routes": "ipv6"
+  "routes": "ipv6",
+  "multi_protocol": false
 }
 ```
 
@@ -32,7 +34,8 @@
   "ipv6": "fe80::1",
   "public_ip": "1.2.3.4",
   "extended_next_hop": false,
-  "routes": "ipv6"
+  "routes": "ipv6",
+  "multi_protocol": false
 }
 ```
 
@@ -44,7 +47,8 @@
   "ipv6": "fd00:1::1",
   "public_ip": "1.2.3.4",
   "extended_next_hop": false,
-  "routes": "both"
+  "routes": "both",
+  "multi_protocol": false
 }
 ```
 
@@ -56,7 +60,8 @@
   "ipv6": "fe80::1",
   "public_ip": "1.2.3.4",
   "extended_next_hop": false,
-  "routes": "ipv4"
+  "routes": "both",
+  "multi_protocol": false
 }
 ```
 
@@ -68,7 +73,8 @@
   "ipv6": "fd00:1::1",
   "public_ip": "1.2.3.4",
   "extended_next_hop": false,
-  "routes": "both"
+  "routes": "both",
+  "multi_protocol": true
 }
 ```
 
@@ -80,7 +86,8 @@
   "ipv6": "fe80::1",
   "public_ip": "1.2.3.4",
   "extended_next_hop": false,
-  "routes": "both"
+  "routes": "both",
+  "multi_protocol": true
 }
 ```
 
@@ -92,7 +99,8 @@
   "ipv6": "fd00:1::1",
   "public_ip": "1.2.3.4",
   "extended_next_hop": true,
-  "routes": "both"
+  "routes": "both",
+  "multi_protocol": true
 }
 ```
 
@@ -104,6 +112,7 @@
   "ipv6": "fe80::1",
   "public_ip": "1.2.3.4",
   "extended_next_hop": true,
-  "routes": "both"
+  "routes": "both",
+  "multi_protocol": true
 }
 ```

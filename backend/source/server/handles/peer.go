@@ -12,7 +12,8 @@ type PeerRequest struct {
 	IPv6            string `json:"ipv6"`
 	PublicIP        string `json:"public_ip"`
 	ExtendedNextHop bool   `json:"extended_next_hop"`
-	Routes          string `json:"routes"`
+	Routes          string `json:"routes"` // "ipv4", "ipv6", "both"
+	MultiProtocol   bool   `json:"multi_protocol"`
 }
 
 type PeerType string
@@ -34,40 +35,30 @@ func isLocalLink(ipv6 string) bool {
 }
 
 func JudgePeerType(req PeerRequest) PeerType {
-	mode := req.Routes
-	isLocalLink := isLocalLink(req.IPv6)
+	isLocal := isLocalLink(req.IPv6)
 
-	if req.ExtendedNextHop {
-		if isLocalLink && mode == "both" {
-			return PeerTypeMultiProtocolExtendedNextHopLocalLinkv6
-		} else if mode == "both" {
-			return PeerTypeMultiProtocolExtendedNextHop
-		}
-	}
-	if isLocalLink {
-		if mode == "ipv4" {
-			return PeerTypeDualStackLocalLinkv6
-		}
-		if mode == "ipv6" {
-			return PeerTypeIPv6OnlyLocalLinkv6
-		}
-		if mode == "both" {
-			return PeerTypeMultiProtocolLocalLinkv6
-		}
-	}
-	if mode == "both" && !isLocalLink && !req.ExtendedNextHop {
+	switch {
+	case req.MultiProtocol && req.ExtendedNextHop && isLocal:
+		return PeerTypeMultiProtocolExtendedNextHopLocalLinkv6
+	case req.MultiProtocol && req.ExtendedNextHop:
+		return PeerTypeMultiProtocolExtendedNextHop
+	case req.MultiProtocol && isLocal:
+		return PeerTypeMultiProtocolLocalLinkv6
+	case req.MultiProtocol:
 		return PeerTypeMultiProtocol
-	}
-	if mode == "ipv4" {
-		return PeerTypeIPv4Only
-	}
-	if mode == "ipv6" {
-		return PeerTypeIPv6Only
-	}
-	if mode == "both" {
+	case isLocal && req.Routes == "both":
+		return PeerTypeDualStackLocalLinkv6
+	case isLocal && req.Routes == "ipv6":
+		return PeerTypeIPv6OnlyLocalLinkv6
+	case req.Routes == "both":
 		return PeerTypeDualStack
+	case req.Routes == "ipv4":
+		return PeerTypeIPv4Only
+	case req.Routes == "ipv6":
+		return PeerTypeIPv6Only
+	default:
+		return "unknown"
 	}
-	return "unknown"
 }
 
 func PeerHandler(c *gin.Context) {
