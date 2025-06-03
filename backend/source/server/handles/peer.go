@@ -37,28 +37,55 @@ func isLocalLink(ipv6 string) bool {
 func JudgePeerType(req PeerRequest) PeerType {
 	isLocal := isLocalLink(req.IPv6)
 
-	switch {
-	case req.MultiProtocol && req.ExtendedNextHop && isLocal:
-		return PeerTypeMultiProtocolExtendedNextHopLocalLinkv6
-	case req.MultiProtocol && req.ExtendedNextHop:
-		return PeerTypeMultiProtocolExtendedNextHop
-	case req.MultiProtocol && isLocal:
-		return PeerTypeMultiProtocolLocalLinkv6
-	case req.MultiProtocol:
-		return PeerTypeMultiProtocol
-	case isLocal && req.Routes == "both":
-		return PeerTypeDualStackLocalLinkv6
-	case isLocal && req.Routes == "ipv6":
-		return PeerTypeIPv6OnlyLocalLinkv6
-	case req.Routes == "both":
-		return PeerTypeDualStack
-	case req.Routes == "ipv4":
-		return PeerTypeIPv4Only
-	case req.Routes == "ipv6":
-		return PeerTypeIPv6Only
-	default:
+	// 规则校验
+	if req.MultiProtocol && req.Routes != "both" {
 		return "unknown"
 	}
+	if req.ExtendedNextHop && (!req.MultiProtocol || req.IPv6 == "") {
+		return "unknown"
+	}
+
+	// 只允许单IP类型
+	if req.Routes == "ipv4" {
+		if req.IPv4 != "" && req.IPv6 == "" {
+			return PeerTypeIPv4Only
+		}
+		return "unknown"
+	}
+	if req.Routes == "ipv6" {
+		if req.IPv6 != "" && req.IPv4 == "" {
+			if isLocal {
+				return PeerTypeIPv6OnlyLocalLinkv6
+			}
+			return PeerTypeIPv6Only
+		}
+		return "unknown"
+	}
+
+	// 需要双IP类型
+	if req.IPv4 == "" || req.IPv6 == "" {
+		return "unknown"
+	}
+
+	// 多协议类型
+	if req.MultiProtocol {
+		if req.ExtendedNextHop {
+			if isLocal {
+				return PeerTypeMultiProtocolExtendedNextHopLocalLinkv6
+			}
+			return PeerTypeMultiProtocolExtendedNextHop
+		}
+		if isLocal {
+			return PeerTypeMultiProtocolLocalLinkv6
+		}
+		return PeerTypeMultiProtocol
+	}
+
+	// 非多协议类型
+	if isLocal {
+		return PeerTypeDualStackLocalLinkv6
+	}
+	return PeerTypeDualStack
 }
 
 func PeerHandler(c *gin.Context) {
