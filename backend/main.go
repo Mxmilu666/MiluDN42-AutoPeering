@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/Mxmilu666/MiluDN42-AutoPeering/backend/source"
 	"github.com/Mxmilu666/MiluDN42-AutoPeering/backend/source/logger"
 	"github.com/Mxmilu666/MiluDN42-AutoPeering/backend/source/server"
@@ -19,7 +17,7 @@ func main() {
 	configPath := "config.yaml"
 	_, err := source.LoadConfig(configPath)
 	if err != nil {
-		fmt.Printf("Failed to load config: %v\n", err)
+		logger.Error("Failed to load config: %v", err)
 		return
 	}
 
