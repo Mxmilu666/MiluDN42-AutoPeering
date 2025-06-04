@@ -87,13 +87,13 @@ func JudgePeerType(req PeerRequest) PeerType {
 func PeerHandler(c *gin.Context) {
 	var req PeerRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		SendResponse(c, http.StatusBadRequest, "error", "invalid request")
 		return
 	}
 
 	typeStr := JudgePeerType(req)
 	if typeStr == "unknown" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid peer type"})
+		SendResponse(c, http.StatusBadRequest, "error", "invalid peer type")
 		return
 	}
 
@@ -108,13 +108,13 @@ func PeerHandler(c *gin.Context) {
 	data := helper.BuildBirdTemplateData(birdData)
 	conf, err := helper.RenderBirdConf(helper.PeerType(typeStr), data)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		SendResponse(c, http.StatusBadRequest, "error", "failed to render bird config")
 		return
 	}
 
 	// WireGuard 配置校验
 	if req.WireGuard.PubKey == "" || req.WireGuard.Endpoint == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "WireGuard pubkey and endpoint are required"})
+		SendResponse(c, http.StatusBadRequest, "error", "WireGuard pubkey and endpoint are required")
 	}
 
 	// 构造 WireGuard 模板数据
@@ -130,26 +130,22 @@ func PeerHandler(c *gin.Context) {
 	wgConf := helper.BuildWireGuardTemplateData(wgData)
 	wgConfStr, wgErr := helper.RenderWireGuardConf(wgConf)
 	if wgErr != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": wgErr.Error()})
+		SendResponse(c, http.StatusInternalServerError, "error", "failed to render wireguard config")
 		return
 	}
 
 	err = helper.SetupConfFiles(req.ASN, conf, wgConfStr)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		SendResponse(c, http.StatusInternalServerError, "error", "failed to setup config files")
 		return
 	}
 
 	// 新增：调用wg-quick up和birdc c
 	err = helper.RunWgQuickAndBirdc(req.ASN)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		SendResponse(c, http.StatusInternalServerError, "error", "failed to setup")
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"type":           typeStr,
-		"bird_conf":      conf,
-		"wireguard_conf": wgConfStr,
-	})
+	SendResponse(c, http.StatusOK, "success", "peer setup successfully type: "+typeStr)
 }

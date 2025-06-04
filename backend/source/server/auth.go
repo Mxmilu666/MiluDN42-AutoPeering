@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/Mxmilu666/MiluDN42-AutoPeering/backend/source"
+	"github.com/Mxmilu666/MiluDN42-AutoPeering/backend/source/server/handles"
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,7 +13,7 @@ func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		header := c.GetHeader("Authorization")
 		if header == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Authorization token required"})
+			handles.SendResponse(c, http.StatusUnauthorized, "error", "Authorization token required")
 			return
 		}
 		token := header
@@ -21,7 +22,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			token = header[len(bearerPrefix):]
 		}
 		if source.AppConfig == nil || token != source.AppConfig.Token {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			handles.SendResponse(c, http.StatusUnauthorized, "error", "Invalid token")
 			return
 		}
 		c.Next()

@@ -39,7 +39,7 @@ func randomString(n int) string {
 func RequestVerify(c *gin.Context) {
 	var req VerifyRequest
 	if err := c.ShouldBindJSON(&req); err != nil || len(req.IPs) == 0 {
-		SendResponse(c, http.StatusBadRequest, "invalid request", nil)
+		SendResponse(c, http.StatusBadRequest, "error", "invalid request")
 		return
 	}
 
@@ -49,7 +49,7 @@ func RequestVerify(c *gin.Context) {
 		for _, ip := range req.IPs {
 			if _, exists := info.IPAllow[ip]; exists && time.Now().Before(info.Expire) {
 				verifyMu.Unlock()
-				SendResponse(c, http.StatusConflict, "ip already in use", nil)
+				SendResponse(c, http.StatusConflict, "error", "ip already exists in another request")
 				return
 			}
 		}
@@ -81,16 +81,16 @@ func VerifyHandler(c *gin.Context) {
 	info, ok := verifyStore[dir] // 只用dir查找
 	verifyMu.Unlock()
 	if !ok || time.Now().After(info.Expire) {
-		SendResponse(c, http.StatusNotFound, "not found or expired", nil)
+		SendResponse(c, http.StatusNotFound, "error", "not found or expired")
 		return
 	}
 	clientIP := c.ClientIP()
 	if _, allowed := info.IPAllow[clientIP]; !allowed {
-		SendResponse(c, http.StatusForbidden, "ip not allowed", nil)
+		SendResponse(c, http.StatusForbidden, "error", "ip not allowed")
 		return
 	}
-	// 不再返回token，只返回200
-	SendResponse(c, http.StatusOK, "ok", nil)
+	// 直接返回token字符串，不要json
+	c.String(http.StatusOK, info.Token)
 }
 
 // POST /api/verify/confirm
@@ -101,22 +101,22 @@ func ConfirmVerify(c *gin.Context) {
 	}
 	var req ConfirmRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		SendResponse(c, http.StatusBadRequest, "invalid request", nil)
+		SendResponse(c, http.StatusBadRequest, "error", "invalid request")
 		return
 	}
 	verifyMu.Lock()
 	info, ok := verifyStore[req.Dir]
 	if !ok || time.Now().After(info.Expire) {
 		verifyMu.Unlock()
-		SendResponse(c, http.StatusNotFound, "not found or expired", nil)
+		SendResponse(c, http.StatusNotFound, "error", "not found or expired")
 		return
 	}
 	if info.Token != req.Token {
 		verifyMu.Unlock()
-		SendResponse(c, http.StatusForbidden, "invalid token", nil)
+		SendResponse(c, http.StatusForbidden, "error", "invalid token")
 		return
 	}
 	delete(verifyStore, req.Dir)
 	verifyMu.Unlock()
-	SendResponse(c, http.StatusOK, "verify success", nil)
+	SendResponse(c, http.StatusOK, "success", nil)
 }

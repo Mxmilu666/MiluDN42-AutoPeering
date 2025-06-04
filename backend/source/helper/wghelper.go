@@ -3,6 +3,7 @@ package helper
 import (
 	"bytes"
 	"fmt"
+	"os/exec"
 	"path/filepath"
 	"text/template"
 
@@ -55,3 +56,13 @@ func RenderWireGuardConf(data WireGuardTemplateData) (string, error) {
 }
 
 type WireGuardTemplateData map[string]any
+
+// RawWGShow 执行 wg show 并返回原始输出
+func RawWGShow(iface string) (string, error) {
+	cmd := exec.Command("wg", "show", iface)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return "", fmt.Errorf("failed to run wg show %s: %w", iface, err)
+	}
+	return string(out), nil
+}
