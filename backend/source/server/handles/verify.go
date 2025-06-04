@@ -89,5 +89,34 @@ func VerifyHandler(c *gin.Context) {
 		SendResponse(c, http.StatusForbidden, "ip not allowed", nil)
 		return
 	}
-	c.String(http.StatusOK, info.Token)
+	// 不再返回token，只返回200
+	SendResponse(c, http.StatusOK, "ok", nil)
+}
+
+// POST /api/verify/confirm
+func ConfirmVerify(c *gin.Context) {
+	type ConfirmRequest struct {
+		Dir   string `json:"dir" binding:"required"`
+		Token string `json:"token" binding:"required"`
+	}
+	var req ConfirmRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		SendResponse(c, http.StatusBadRequest, "invalid request", nil)
+		return
+	}
+	verifyMu.Lock()
+	info, ok := verifyStore[req.Dir]
+	if !ok || time.Now().After(info.Expire) {
+		verifyMu.Unlock()
+		SendResponse(c, http.StatusNotFound, "not found or expired", nil)
+		return
+	}
+	if info.Token != req.Token {
+		verifyMu.Unlock()
+		SendResponse(c, http.StatusForbidden, "invalid token", nil)
+		return
+	}
+	delete(verifyStore, req.Dir)
+	verifyMu.Unlock()
+	SendResponse(c, http.StatusOK, "verify success", nil)
 }

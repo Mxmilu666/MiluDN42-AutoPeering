@@ -15,6 +15,7 @@ func initRouter(r *gin.Engine) *gin.Engine {
 		}
 
 		api.POST("/verify", handles.RequestVerify)
+		api.POST("/verify/confirm", handles.ConfirmVerify)
 		api.POST("/peer", handles.PeerHandler)
 	}
 

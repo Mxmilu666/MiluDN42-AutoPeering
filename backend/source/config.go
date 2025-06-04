@@ -25,14 +25,16 @@ type Config struct {
 
 	// Wireguard配置
 	Wireguard struct {
+		PublicKey  string `yaml:"public_key"`
 		ConfigPath string `yaml:"config_path"`
 	} `yaml:"wireguard"`
 
 	// DN42网络配置
 	DN42 struct {
-		IPv4 string `yaml:"ipv4"`
-		IPv6 string `yaml:"ipv6"`
-		ASN  string `yaml:"asn"`
+		IPv4      string `yaml:"ipv4"`
+		IPv6      string `yaml:"ipv6"`
+		LocalLink string `yaml:"local_link"`
+		ASN       string `yaml:"asn"`
 	} `yaml:"dn42"`
 }
 
@@ -58,6 +60,7 @@ func DefaultConfig() Config {
 	// DN42网络配置
 	config.DN42.IPv4 = ""
 	config.DN42.IPv6 = ""
+	config.DN42.LocalLink = ""
 	config.DN42.ASN = ""
 
 	return config
