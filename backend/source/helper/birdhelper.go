@@ -128,32 +128,34 @@ func ParseBirdPeerDetail(peerName, output string) (*BirdPeerDetail, error) {
 			detail.BGPState = strings.TrimSpace(strings.TrimPrefix(line, "BGP state:"))
 		}
 		if strings.HasPrefix(line, "Channel ") {
-			// 例如: Channel ipv4
+			// 遇到新channel前，先保存上一个channel
+			if currentChannel != nil {
+				detail.Channels = append(detail.Channels, *currentChannel)
+			}
 			parts := strings.Fields(line)
 			if len(parts) >= 2 {
 				currentChannel = &BirdPeerChannelInfo{ChannelType: parts[1]}
-				detail.Channels = append(detail.Channels, *currentChannel)
+			} else {
+				currentChannel = nil
 			}
+			continue
 		}
 		if currentChannel != nil && strings.HasPrefix(line, "State:") {
 			currentChannel.State = strings.TrimSpace(strings.TrimPrefix(line, "State:"))
-			// 更新到最后一个channel
-			if len(detail.Channels) > 0 {
-				detail.Channels[len(detail.Channels)-1] = *currentChannel
-			}
 		}
-		if currentChannel != nil && (strings.HasPrefix(line, "IPv4") || strings.HasPrefix(line, "IPv6")) {
+		if currentChannel != nil && strings.HasPrefix(line, "Routes:") {
 			re := regexp.MustCompile(`(\d+) imported, (\d+) exported, (\d+) preferred`)
 			matches := re.FindStringSubmatch(line)
 			if len(matches) == 4 {
 				currentChannel.Imported = parseInt(matches[1])
 				currentChannel.Exported = parseInt(matches[2])
 				currentChannel.Preferred = parseInt(matches[3])
-				if len(detail.Channels) > 0 {
-					detail.Channels[len(detail.Channels)-1] = *currentChannel
-				}
 			}
 		}
+	}
+	// 循环结束后，别忘了保存最后一个channel
+	if currentChannel != nil {
+		detail.Channels = append(detail.Channels, *currentChannel)
 	}
 	return &detail, nil
 }
