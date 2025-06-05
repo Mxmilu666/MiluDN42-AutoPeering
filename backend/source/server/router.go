@@ -15,6 +15,7 @@ func initRouter(r *gin.Engine) *gin.Engine {
 		}
 		api.POST("/peer", handles.PeerHandler)
 		api.GET("/peer/info", handles.GetPeerInfoHandler)
+		api.POST("/restart", handles.RestartHandler)
 	}
 	return r
 }

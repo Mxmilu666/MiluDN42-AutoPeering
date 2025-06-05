@@ -26,23 +26,31 @@ func GetPeerInfoHandler(c *gin.Context) {
 		SendResponse(c, http.StatusInternalServerError, "error", "failed to get BGP peers")
 		return
 	}
-	// 模糊查找对应 peer 名字
-	peerName, found := helper.FindPeerNameByFuzzy(peers, asn)
-	var output any = nil
-	if found {
-		// 查询详细 BGP 信息
-		var err error
-		output, err = helper.GetAndParseBGPPeerDetail(peerName)
-		if err != nil {
-			SendResponse(c, http.StatusInternalServerError, "error", "failed to get BGP peer detail")
-			return
+	// 模糊查找所有匹配的 peer 名字
+	matchedPeers := helper.FindPeerNamesByFuzzy(peers, asn)
+	var mergedDetail *helper.BirdPeerDetail = nil
+	if len(matchedPeers) > 0 {
+		mergedDetail = &helper.BirdPeerDetail{
+			PeerName: asn,
+			Channels: []helper.BirdPeerChannelInfo{},
+		}
+		for idx, peerName := range matchedPeers {
+			detail, err := helper.GetAndParseBGPPeerDetail(peerName)
+			if err != nil {
+				SendResponse(c, http.StatusInternalServerError, "error", "failed to get BGP peer detail")
+				return
+			}
+			if idx == 0 {
+				mergedDetail.BGPState = detail.BGPState
+			}
+			mergedDetail.Channels = append(mergedDetail.Channels, detail.Channels...)
 		}
 	}
 
 	info := map[string]any{
 		"asn":     asn,
 		"wginfo":  wginfo,
-		"bgpinfo": output,
+		"bgpinfo": mergedDetail,
 	}
 	SendResponse(c, http.StatusOK, "success", info)
 }

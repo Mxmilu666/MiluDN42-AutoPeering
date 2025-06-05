@@ -175,3 +175,15 @@ func FindPeerNameByFuzzy(peers []string, keyword string) (string, bool) {
 	}
 	return "", false
 }
+
+// 根据关键字模糊查找所有匹配的peer名字
+func FindPeerNamesByFuzzy(peers []string, keyword string) []string {
+	keyword = strings.ToLower(keyword)
+	var matched []string
+	for _, peer := range peers {
+		if strings.Contains(strings.ToLower(peer), keyword) {
+			matched = append(matched, peer)
+		}
+	}
+	return matched
+}
