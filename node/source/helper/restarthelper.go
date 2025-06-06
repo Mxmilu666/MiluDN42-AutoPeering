@@ -3,6 +3,8 @@ package helper
 import (
 	"fmt"
 	"os/exec"
+
+	"github.com/Mxmilu666/MiluDN42-AutoPeering/node/source/logger"
 )
 
 // RestartTunnelAndBird 重启指定 ASN 的 WireGuard 隧道和 BIRD 会话
@@ -13,7 +15,7 @@ func RestartTunnelAndBird(asn string) (string, any, error) {
 	downCmd := exec.Command("wg-quick", "down", iface)
 	downOut, downErr := downCmd.CombinedOutput()
 	if downErr != nil {
-		return "", nil, fmt.Errorf("wg-quick down failed: %v, output: %s", downErr, string(downOut))
+		logger.Warn("wg-quick down failed", "error", downErr, "output", string(downOut))
 	}
 
 	// 再 up
