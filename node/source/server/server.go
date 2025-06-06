@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Mxmilu666/MiluDN42-AutoPeering/backend/source"
-	logger "github.com/Mxmilu666/MiluDN42-AutoPeering/backend/source/logger"
+	"github.com/Mxmilu666/MiluDN42-AutoPeering/node/source"
+	logger "github.com/Mxmilu666/MiluDN42-AutoPeering/node/source/logger"
 	"github.com/gin-gonic/gin"
 )
 

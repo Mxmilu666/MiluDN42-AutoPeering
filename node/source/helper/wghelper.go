@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"text/template"
 
-	"github.com/Mxmilu666/MiluDN42-AutoPeering/backend/source"
+	"github.com/Mxmilu666/MiluDN42-AutoPeering/node/source"
 )
 
 // 构造 WireGuard 模板数据

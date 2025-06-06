@@ -1,4 +1,4 @@
-module github.com/Mxmilu666/MiluDN42-AutoPeering/backend
+module github.com/Mxmilu666/MiluDN42-AutoPeering/node
 
 go 1.23.2
 

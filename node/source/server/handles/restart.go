@@ -3,7 +3,7 @@ package handles
 import (
 	"net/http"
 
-	"github.com/Mxmilu666/MiluDN42-AutoPeering/backend/source/helper"
+	"github.com/Mxmilu666/MiluDN42-AutoPeering/node/source/helper"
 	"github.com/gin-gonic/gin"
 )
 

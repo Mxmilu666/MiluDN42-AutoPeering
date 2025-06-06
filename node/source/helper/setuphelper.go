@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/Mxmilu666/MiluDN42-AutoPeering/backend/source"
+	"github.com/Mxmilu666/MiluDN42-AutoPeering/node/source"
 )
 
 // SetupConfFiles 会在 Bird 和 WireGuard 配置都渲染完毕后，将内容写入目录

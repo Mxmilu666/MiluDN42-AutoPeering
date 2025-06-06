@@ -1,7 +1,7 @@
 package server
 
 import (
-	"github.com/Mxmilu666/MiluDN42-AutoPeering/backend/source/server/handles"
+	"github.com/Mxmilu666/MiluDN42-AutoPeering/node/source/server/handles"
 	"github.com/gin-gonic/gin"
 )
 

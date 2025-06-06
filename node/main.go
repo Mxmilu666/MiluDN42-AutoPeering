@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/Mxmilu666/MiluDN42-AutoPeering/backend/source"
-	"github.com/Mxmilu666/MiluDN42-AutoPeering/backend/source/logger"
-	"github.com/Mxmilu666/MiluDN42-AutoPeering/backend/source/server"
+	"github.com/Mxmilu666/MiluDN42-AutoPeering/node/source"
+	"github.com/Mxmilu666/MiluDN42-AutoPeering/node/source/logger"
+	"github.com/Mxmilu666/MiluDN42-AutoPeering/node/source/server"
 )
 
 func main() {
@@ -12,7 +12,7 @@ func main() {
 		panic("Failed to initialize logger")
 	}
 
-	logger.Info("Nya!,MiluDN42-AutoPeering-Backend")
+	logger.Info("Nya!,MiluDN42-AutoPeering-Node")
 
 	configPath := "config.yaml"
 	_, err := source.LoadConfig(configPath)
