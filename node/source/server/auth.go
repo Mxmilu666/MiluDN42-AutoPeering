@@ -14,6 +14,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		header := c.GetHeader("Authorization")
 		if header == "" {
 			handles.SendResponse(c, http.StatusUnauthorized, "error", "Authorization token required")
+			c.Abort()
 			return
 		}
 		token := header
@@ -23,6 +24,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 		if source.AppConfig == nil || token != source.AppConfig.Token {
 			handles.SendResponse(c, http.StatusUnauthorized, "error", "Invalid token")
+			c.Abort()
 			return
 		}
 		c.Next()
