@@ -30,6 +30,11 @@ type CenterConfig struct {
 	} `yaml:"smtp"`
 
 	Nodes []NodeConfig `yaml:"nodes"`
+
+	Whois struct {
+		Host string `yaml:"host"`
+		Port int    `yaml:"port"`
+	} `yaml:"whois"`
 }
 
 // AppConfig 保存全局配置
@@ -57,6 +62,8 @@ func DefaultConfig() CenterConfig {
 			Token:   "node2_token",
 		},
 	}
+	cfg.Whois.Host = "whois.akae.re"
+	cfg.Whois.Port = 43
 	return cfg
 }
 
@@ -121,6 +128,12 @@ func validateConfig(cfg *CenterConfig) error {
 		if n.Name == "" || n.Address == "" || n.Token == "" {
 			return fmt.Errorf("node[%d] fields cannot be empty", i)
 		}
+	}
+	if cfg.Whois.Host == "" {
+		return fmt.Errorf("whois host cannot be empty")
+	}
+	if cfg.Whois.Port <= 0 || cfg.Whois.Port > 65535 {
+		return fmt.Errorf("invalid whois port: %d", cfg.Whois.Port)
 	}
 	return nil
 }

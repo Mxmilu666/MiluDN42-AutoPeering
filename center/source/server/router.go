@@ -11,6 +11,7 @@ func initRouter(r *gin.Engine) *gin.Engine {
 	{
 		api.GET("/nodes/info", handles.GetAllNodesInfo)
 		api.GET("/node/info/:name", handles.GetNodeInfo)
+		api.GET("/asn/verify", handles.SendASNVerifyCode)
 	}
 	return r
 }
