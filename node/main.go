@@ -17,7 +17,7 @@ func main() {
 	configPath := "config.yaml"
 	_, err := source.LoadConfig(configPath)
 	if err != nil {
-		logger.Error("Failed to load config: %v", err)
+		logger.Error("Failed to load config", "error", err)
 		return
 	}
 
