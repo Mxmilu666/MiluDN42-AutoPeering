@@ -1,10 +1,15 @@
 package main
 
 import (
-	"fmt"
+	"github.com/Mxmilu666/MiluDN42-AutoPeering/center/source/logger"
 )
 
 func main() {
-	fmt.Println("Hello, World!")
-	// code here ...
+	l := logger.InitLogger()
+	if l == nil {
+		panic("Failed to initialize logger")
+	}
+
+	logger.Info("Nya!,MiluDN42-AutoPeering-Center")
+
 }
