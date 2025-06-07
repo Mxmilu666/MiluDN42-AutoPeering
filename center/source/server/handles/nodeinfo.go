@@ -70,3 +70,20 @@ func GetAllNodesInfo(c *gin.Context) {
 
 	SendResponse(c, http.StatusOK, "success", results)
 }
+
+// GetNodeInfo 获取指定 node 的详细信息
+func GetNodeInfo(c *gin.Context) {
+	name := c.Param("name")
+	if name == "" {
+		SendResponse(c, http.StatusBadRequest, "node name is required", nil)
+		return
+	}
+
+	info, err := api.GetNodeInfoByName(name)
+	if err != nil {
+		SendResponse(c, http.StatusNotFound, err.Error(), nil)
+		return
+	}
+
+	SendResponse(c, http.StatusOK, "success", info)
+}

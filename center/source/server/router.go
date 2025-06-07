@@ -10,6 +10,7 @@ func initRouter(r *gin.Engine) *gin.Engine {
 	api := r.Group("/api")
 	{
 		api.GET("/nodes/info", handles.GetAllNodesInfo)
+		api.GET("/node/info/:name", handles.GetNodeInfo)
 	}
 	return r
 }
