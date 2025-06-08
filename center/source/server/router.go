@@ -11,7 +11,15 @@ func initRouter(r *gin.Engine) *gin.Engine {
 	{
 		api.GET("/nodes/info", handles.GetAllNodesInfo)
 		api.GET("/node/info/:name", handles.GetNodeInfo)
+
 		api.GET("/asn/verify", handles.SendASNVerifyCode)
+		api.POST("/asn/verify", handles.VerifyASNCodeAndIssueJWT)
+
+		peer := api.Group("/peer", handles.JWTMiddleware("asn-verify"))
+		{
+			peer.GET("/info", handles.GetPeerInfo)
+			peer.POST("/create", handles.CreatePeerHandler)
+		}
 	}
 	return r
 }

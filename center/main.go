@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/Mxmilu666/MiluDN42-AutoPeering/center/source"
+	"github.com/Mxmilu666/MiluDN42-AutoPeering/center/source/helper"
 	"github.com/Mxmilu666/MiluDN42-AutoPeering/center/source/logger"
 	"github.com/Mxmilu666/MiluDN42-AutoPeering/center/source/server"
 )
@@ -19,6 +20,11 @@ func main() {
 	if err != nil {
 		logger.Error("Failed to load config", "error", err)
 		return
+	}
+
+	err = helper.InitJWTHelper()
+	if err != nil {
+		logger.Fatal("Failed to initialize JWTHelper:", err.Error())
 	}
 
 	server.Setupserver()

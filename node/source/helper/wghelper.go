@@ -29,6 +29,10 @@ func BuildWireGuardTemplateData(req PeerRequestWGForTemplate) WireGuardTemplateD
 	if asnLen > 5 {
 		peeringPort = req.ASN[asnLen-5:]
 	}
+	isLocalLink := false
+	if len(source.AppConfig.DN42.LocalLink) >= 4 && source.AppConfig.DN42.LocalLink[:4] == "fe80" {
+		isLocalLink = true
+	}
 	return WireGuardTemplateData{
 		"peering_port":       peeringPort,
 		"my_link_local":      source.AppConfig.DN42.LocalLink,
@@ -37,6 +41,7 @@ func BuildWireGuardTemplateData(req PeerRequestWGForTemplate) WireGuardTemplateD
 		"peering_dn42_v4":    req.IPv4,
 		"peering_public_key": req.WireGuard.PubKey,
 		"peering_endpoint":   req.WireGuard.Endpoint,
+		"is_local_link":      isLocalLink,
 	}
 }
 
