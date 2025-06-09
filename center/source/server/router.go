@@ -18,6 +18,7 @@ func initRouter(r *gin.Engine) *gin.Engine {
 		peer := api.Group("/peer", handles.JWTMiddleware("asn-verify"))
 		{
 			peer.GET("/info", handles.GetPeerInfo)
+			peer.GET("/all", handles.GetAllPeersInfo)
 			peer.POST("/create", handles.CreatePeerHandler)
 		}
 	}
